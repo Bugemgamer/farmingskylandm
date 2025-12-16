@@ -2,74 +2,128 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Generator Akun</title>
+<title>FARMING ACC BY SKY LAND</title>
 <style>
-body {
-    background:#111;
-    color:#0f0;
-    font-family:Arial;
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(180deg,#5b0ea6,#7b1fd3);
+    color:#fff;
     text-align:center;
-    padding:20px;
 }
-button {
-    padding:10px 20px;
-    font-size:16px;
+.container{
+    padding:20px;
+    max-width:700px;
+    margin:auto;
+}
+h1{
+    margin-top:20px;
+}
+.btn{
+    width:100%;
+    padding:14px;
+    margin:8px 0;
+    border:none;
+    border-radius:12px;
+    background:#8e2de2;
+    color:#fff;
+    font-size:15px;
     cursor:pointer;
 }
-textarea {
-    width:90%;
-    height:120px;
+.btn:hover{
+    background:#a855f7;
+}
+.output{
     margin-top:15px;
-    background:#000;
-    color:#0f0;
+    background:#6b21a8;
+    border-radius:15px;
+    padding:15px;
+}
+textarea{
+    width:100%;
+    height:120px;
+    border:none;
+    border-radius:10px;
+    padding:10px;
+    font-size:14px;
+}
+.download{
+    margin-top:10px;
+    background:#22c55e;
+    color:#000;
+}
+.footer{
+    margin-top:15px;
+    font-size:13px;
+    opacity:.8;
 }
 </style>
 </head>
 <body>
 
-<h2>Generator Akun</h2>
-<button onclick="generate()">Generate Akun</button>
+<div class="container">
+    <h1>FARMING ACC BY SKY LAND</h1>
 
-<textarea id="hasil" readonly></textarea>
+    <button class="btn" onclick="loadFile('akun.txt')">ACCOUNT MLBB ACAK akun.txt</button>
+    <button class="btn" onclick="loadFile('info.txt')">ACCOUNT MLBB INFO info.txt</button>
+    <button class="btn" onclick="loadFile('info1.txt')">ACCOUNT MLBB INFO info1.txt</button>
+    <button class="btn" onclick="loadFile('info2.txt')">ACCOUNT MLBB INFO info2.txt</button>
+    <button class="btn" onclick="loadFile('info3.txt')">ACCOUNT MLBB INFO info3.txt</button>
+    <button class="btn" onclick="loadFile('roblox.txt')">ACCOUNT ROBLOX ACAK roblox.txt</button>
+
+    <div class="output">
+        <textarea id="hasil" placeholder="Akun akan muncul di sini..." readonly></textarea>
+        <button class="btn download" onclick="downloadTxt()">Download TXT</button>
+    </div>
+
+    <div class="footer">SKY LAND TOOLS</div>
+</div>
 
 <script>
-let akun = [];
+let akunList = [];
+let lastResult = "";
 
-// ambil akun dari akun.txt
-fetch("akun.txt")
-.then(res => res.text())
-.then(text => {
-    akun = text
-        .split("\n")
-        .map(x => x.trim())
-        .filter(x => x.includes(":"));
-})
-.catch(() => {
-    alert("Gagal mengambil akun.txt (pastikan pakai server)");
-});
+function loadFile(file){
+    fetch(file)
+    .then(r => r.text())
+    .then(text => {
+        akunList = text.split("\n").map(x=>x.trim()).filter(x=>x.includes(":"));
+        if(akunList.length === 0){
+            alert("File kosong / format salah");
+            return;
+        }
+        generate();
+    })
+    .catch(()=>{
+        alert("Gagal membaca "+file);
+    });
+}
 
-function generate() {
-    if (akun.length === 0) {
-        document.getElementById("hasil").value = "AKUN HABIS!";
+function generate(){
+    let i = Math.floor(Math.random()*akunList.length);
+    let data = akunList[i].split(":");
+
+    lastResult =
+        "Email    : " + data[0] + "\n" +
+        "Password : " + data[1];
+
+    document.getElementById("hasil").value = lastResult;
+}
+
+function downloadTxt(){
+    if(!lastResult){
+        alert("Belum ada akun!");
         return;
     }
 
-    let index = Math.floor(Math.random() * akun.length);
-    let line = akun.splice(index, 1)[0];
+    let nama = prompt("Nama file (tanpa .txt):","akun_skyland");
+    if(!nama) return;
 
-    let data = line.split(":");
-
-    if (data.length < 2) {
-        document.getElementById("hasil").value = "FORMAT AKUN SALAH";
-        return;
-    }
-
-    let email = data[0].trim();
-    let password = data[1].trim();
-
-    document.getElementById("hasil").value =
-        "Email    : " + email + "\n" +
-        "Password : " + password;
+    let blob = new Blob([lastResult], {type:"text/plain"});
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = nama + ".txt";
+    a.click();
 }
 </script>
 
