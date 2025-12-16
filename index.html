@@ -30,35 +30,46 @@ textarea {
 <h2>Generator Akun</h2>
 <button onclick="generate()">Generate Akun</button>
 
-<textarea id="hasil" readonly placeholder="Akun akan muncul di sini"></textarea>
+<textarea id="hasil" readonly></textarea>
 
 <script>
 let akun = [];
 
-// AMBIL AKUN DARI akun.txt
+// ambil akun dari akun.txt
 fetch("akun.txt")
 .then(res => res.text())
 .then(text => {
-    akun = text.split("\n").map(x => x.trim()).filter(x => x !== "");
-    console.log("Total akun:", akun.length);
+    akun = text
+        .split("\n")
+        .map(x => x.trim())
+        .filter(x => x.includes(":"));
 })
-.catch(err => {
+.catch(() => {
     alert("Gagal mengambil akun.txt (pastikan pakai server)");
 });
 
-// GENERATE AKUN
 function generate() {
     if (akun.length === 0) {
         document.getElementById("hasil").value = "AKUN HABIS!";
         return;
     }
 
-    let i = Math.floor(Math.random() * akun.length);
-    let data = akun.splice(i, 1)[0].split("|");
+    let index = Math.floor(Math.random() * akun.length);
+    let line = akun.splice(index, 1)[0];
+
+    let data = line.split(":");
+
+    if (data.length < 2) {
+        document.getElementById("hasil").value = "FORMAT AKUN SALAH";
+        return;
+    }
+
+    let email = data[0].trim();
+    let password = data[1].trim();
 
     document.getElementById("hasil").value =
-        "Email    : " + data[0] + "\n" +
-        "Password : " + data[1];
+        "Email    : " + email + "\n" +
+        "Password : " + password;
 }
 </script>
 
