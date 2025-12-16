@@ -2,61 +2,67 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FARMING ACC BY SKY LAND</title>
 
 <style>
+*{
+    box-sizing:border-box;
+}
 body{
     margin:0;
     font-family:Arial, sans-serif;
     background:linear-gradient(180deg,#5b0ea6,#7b1fd3);
     color:#fff;
-    text-align:center;
 }
 .container{
-    padding:20px;
-    max-width:750px;
+    padding:15px;
+    max-width:600px;
     margin:auto;
 }
 h1{
-    margin:20px 0;
+    text-align:center;
+    font-size:20px;
+    margin-bottom:15px;
 }
 .btn{
     width:100%;
-    padding:14px;
-    margin:7px 0;
+    padding:13px;
+    margin:6px 0;
     border:none;
-    border-radius:14px;
+    border-radius:12px;
     background:#8e2de2;
     color:#fff;
-    font-size:15px;
+    font-size:14px;
     cursor:pointer;
 }
 .btn:hover{
     background:#a855f7;
 }
 .output{
-    margin-top:15px;
+    margin-top:12px;
     background:#6b21a8;
-    border-radius:16px;
-    padding:15px;
+    border-radius:14px;
+    padding:12px;
 }
 textarea{
     width:100%;
-    height:170px;
+    height:220px;
     border:none;
-    border-radius:12px;
+    border-radius:10px;
     padding:10px;
-    font-size:14px;
+    font-size:13px;
     resize:none;
 }
 .download{
-    margin-top:10px;
+    margin-top:8px;
     background:#22c55e;
     color:#000;
 }
 .footer{
-    margin-top:15px;
-    font-size:13px;
+    text-align:center;
+    margin-top:12px;
+    font-size:12px;
     opacity:.8;
 }
 </style>
@@ -75,7 +81,7 @@ textarea{
 <button class="btn" onclick="loadFile('roblox.txt')">ACCOUNT ROBLOX ACAK roblox.txt</button>
 
 <div class="output">
-    <textarea id="hasil" placeholder="Akun akan muncul di sini..." readonly></textarea>
+    <textarea id="hasil" placeholder="Hasil akun akan muncul di sini..." readonly></textarea>
     <button class="btn download" onclick="downloadTxt()">Download TXT</button>
 </div>
 
@@ -91,19 +97,24 @@ let currentFile = "";
 function loadFile(file){
     currentFile = file;
 
+    let jumlah = prompt("Mau generate berapa akun?", "1");
+    jumlah = parseInt(jumlah);
+
+    if(!jumlah || jumlah < 1){
+        alert("Jumlah tidak valid!");
+        return;
+    }
+
     fetch(file)
     .then(r => r.text())
     .then(text => {
 
-        // MODE INFO (blok)
         if(file.startsWith("info")){
             akunList = text
                 .split(/\n\s*\n/)
                 .map(x => x.trim())
-                .filter(x => x.length > 10);
-        }
-        // MODE ACAK (1 line)
-        else{
+                .filter(x => x.length > 20);
+        }else{
             akunList = text
                 .split("\n")
                 .map(x => x.trim())
@@ -115,29 +126,38 @@ function loadFile(file){
             return;
         }
 
-        generate();
+        generateMultiple(jumlah);
     })
     .catch(()=>{
-        alert("Gagal membaca " + file);
+        alert("Gagal membaca file!");
     });
 }
 
-function generate(){
-    let i = Math.floor(Math.random() * akunList.length);
-    let data = akunList[i];
+function generateMultiple(jumlah){
+    let hasil = [];
+    let tempList = [...akunList];
 
-    // INFO → tampilkan utuh
-    if(currentFile.startsWith("info")){
-        lastResult = data;
-    }
-    // ACAK → email:password
-    else{
-        let p = data.split(":");
-        lastResult =
-            "Email    : " + (p[0] || "") + "\n" +
-            "Password : " + (p[1] || "");
+    if(jumlah > tempList.length){
+        alert("Jumlah melebihi stok akun!");
+        return;
     }
 
+    for(let i=0;i<jumlah;i++){
+        let idx = Math.floor(Math.random() * tempList.length);
+        let data = tempList.splice(idx,1)[0];
+
+        if(currentFile.startsWith("info")){
+            hasil.push(data);
+        }else{
+            let p = data.split(":");
+            hasil.push(
+                "Email    : " + (p[0] || "") + "\n" +
+                "Password : " + (p[1] || "")
+            );
+        }
+    }
+
+    lastResult = hasil.join("\n\n====================\n\n");
     document.getElementById("hasil").value = lastResult;
 }
 
