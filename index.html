@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Generator Akun</title>
+<style>
+body {
+    background:#111;
+    color:#0f0;
+    font-family:Arial;
+    text-align:center;
+    padding:20px;
+}
+button {
+    padding:10px 20px;
+    font-size:16px;
+    cursor:pointer;
+}
+textarea {
+    width:90%;
+    height:120px;
+    margin-top:15px;
+    background:#000;
+    color:#0f0;
+}
+</style>
+</head>
+<body>
+
+<h2>Generator Akun</h2>
+<button onclick="generate()">Generate Akun</button>
+
+<textarea id="hasil" readonly placeholder="Akun akan muncul di sini"></textarea>
+
+<script>
+let akun = [];
+
+// AMBIL AKUN DARI akun.txt
+fetch("akun.txt")
+.then(res => res.text())
+.then(text => {
+    akun = text.split("\n").map(x => x.trim()).filter(x => x !== "");
+    console.log("Total akun:", akun.length);
+})
+.catch(err => {
+    alert("Gagal mengambil akun.txt (pastikan pakai server)");
+});
+
+// GENERATE AKUN
+function generate() {
+    if (akun.length === 0) {
+        document.getElementById("hasil").value = "AKUN HABIS!";
+        return;
+    }
+
+    let i = Math.floor(Math.random() * akun.length);
+    let data = akun.splice(i, 1)[0].split("|");
+
+    document.getElementById("hasil").value =
+        "Email    : " + data[0] + "\n" +
+        "Password : " + data[1];
+}
+</script>
+
+</body>
+</html>
