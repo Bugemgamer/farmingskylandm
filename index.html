@@ -2,30 +2,19 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Firebase Test</title>
-<style>
-body{font-family:Arial,sans-serif;padding:20px;background:#1e1e2f;color:#fff;}
-input,button{padding:10px;margin:5px;border-radius:8px;border:none;}
-button{cursor:pointer;}
-#inviteList div{padding:6px;background:#333;margin:4px;border-radius:6px;}
-</style>
 </head>
 <body>
-
-<h2>Test Firebase Realtime DB</h2>
-
-<input type="text" id="kode" placeholder="Masukkan Kode Invite">
-<button onclick="tambahKode()">Tambah Kode</button>
-<hr>
-<h3>Daftar Kode Invite:</h3>
-<div id="inviteList"></div>
+<h2>Test Add Invite</h2>
+<input id="kode" placeholder="Masukkan kode invite">
+<button onclick="addInvite()">Tambah Kode</button>
+<p id="msg"></p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// 🔹 Firebase Config
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCkWKmK_UmQtk6UEIset5e6iPmFZj0ZLHc",
   authDomain: "bugemtoolsdb.firebaseapp.com",
@@ -33,42 +22,29 @@ const firebaseConfig = {
   projectId: "bugemtoolsdb",
   storageBucket: "bugemtoolsdb.firebasestorage.app",
   messagingSenderId: "52270788635",
-  appId: "1:52270788635:web:59bf1c23406beb872e48be"
+  appId: "1:52270788635:web:59bf1c23406beb872e48be",
+  measurementId: "G-SHMYMXM4Z4"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const inviteListDiv = document.getElementById("inviteList");
-
-// ===== Tambah Kode =====
-window.tambahKode = async () => {
+window.addInvite = async () => {
   const kode = document.getElementById("kode").value.trim();
-  if(!kode) return alert("Kode tidak boleh kosong");
-
-  const kodeRef = ref(db, "invites/" + kode);
-  const snapshot = await get(kodeRef);
-  if(snapshot.exists()){
-    alert("Kode sudah ada");
+  const msg = document.getElementById("msg");
+  if(!kode){
+    msg.innerText = "Kode kosong!";
     return;
   }
 
-  await set(kodeRef, { created: Date.now() });
-  alert("Kode berhasil ditambahkan");
-  document.getElementById("kode").value = "";
-};
-
-// ===== Tampilkan Daftar Kode Realtime =====
-const invitesRef = ref(db, "invites");
-onValue(invitesRef, (snapshot) => {
-  inviteListDiv.innerHTML = "";
-  snapshot.forEach(childSnap => {
-    const div = document.createElement("div");
-    div.innerText = childSnap.key + " | " + new Date(childSnap.val().created).toLocaleString();
-    inviteListDiv.appendChild(div);
-  });
-});
+  try{
+    await set(ref(db, 'invites/' + kode), { created: Date.now() });
+    msg.innerText = "✅ Kode berhasil dibuat!";
+  } catch(e){
+    msg.innerText = "❌ Gagal menambahkan kode!";
+    console.error(e);
+  }
+}
 </script>
-
 </body>
 </html>
