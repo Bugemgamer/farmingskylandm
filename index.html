@@ -3,205 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FARMING ACC BY SKY LAND</title>
-
+<title>Firebase Test</title>
 <style>
-*{box-sizing:border-box}
-
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:radial-gradient(circle at top,#7b2cbf,#4c0f8c);
-    color:#fff;
-}
-
-.container{
-    padding:16px;
-    max-width:600px;
-    margin:auto;
-}
-
-/* ===== LOGO ===== */
-.logo-box{
-    display:flex;
-    justify-content:center;
-    margin-top:10px;
-}
-.logo{
-    width:95px;
-    height:95px;
-    border-radius:50%;
-    padding:5px;
-    background:linear-gradient(45deg,#22c55e,#a855f7,#22c55e);
-    animation:spin 6s linear infinite;
-}
-.logo img{
-    width:100%;
-    height:100%;
-    border-radius:50%;
-    background:#000;
-}
-@keyframes spin{
-    0%{filter:drop-shadow(0 0 8px #22c55e)}
-    50%{filter:drop-shadow(0 0 16px #a855f7)}
-    100%{filter:drop-shadow(0 0 8px #22c55e)}
-}
-
-/* ===== TITLE ===== */
-h1{
-    text-align:center;
-    font-size:20px;
-    margin:10px 0 15px;
-    letter-spacing:1px;
-}
-
-/* ===== BUTTON ===== */
-.btn{
-    width:100%;
-    padding:14px;
-    margin:7px 0;
-    border:none;
-    border-radius:14px;
-    background:linear-gradient(135deg,#9333ea,#6d28d9);
-    color:#fff;
-    font-size:14px;
-    cursor:pointer;
-    position:relative;
-    overflow:hidden;
-    transition:.3s;
-}
-.btn::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:linear-gradient(120deg,transparent,rgba(255,255,255,.25),transparent);
-    transform:translateX(-100%);
-}
-.btn:hover::after{
-    transform:translateX(100%);
-    transition:.6s;
-}
-.btn:hover{
-    transform:scale(1.03);
-    box-shadow:0 0 15px rgba(168,85,247,.8);
-}
-.btn:active{
-    transform:scale(.97);
-}
-
-/* ===== OUTPUT ===== */
-.output{
-    margin-top:12px;
-    background:linear-gradient(180deg,#5b21b6,#4c1d95);
-    border-radius:16px;
-    padding:12px;
-    box-shadow:0 0 20px rgba(0,0,0,.4);
-}
-textarea{
-    width:100%;
-    height:230px;
-    border:none;
-    border-radius:12px;
-    padding:10px;
-    font-size:13px;
-    resize:none;
-}
-
-/* ===== DOWNLOAD ===== */
-.download{
-    margin-top:10px;
-    background:linear-gradient(135deg,#22c55e,#16a34a);
-    color:#000;
-    font-weight:bold;
-}
-
-/* ===== FOOTER ===== */
-.footer{
-    text-align:center;
-    margin-top:14px;
-    font-size:12px;
-    opacity:.85;
-}
+body{font-family:Arial,sans-serif;padding:20px;background:#1e1e2f;color:#fff;}
+input,button{padding:10px;margin:5px;border-radius:8px;border:none;}
+button{cursor:pointer;}
+#inviteList div{padding:6px;background:#333;margin:4px;border-radius:6px;}
 </style>
 </head>
-
 <body>
-<div class="container">
 
-<div class="logo-box">
-    <div class="logo">
-        <img src="https://files.catbox.moe/hz53ab.jpg">
-    </div>
-</div>
+<h2>Test Firebase Realtime DB</h2>
 
-<h1>FARMING ACC BY SKY LAND</h1>
+<input type="text" id="kode" placeholder="Masukkan Kode Invite">
+<button onclick="tambahKode()">Tambah Kode</button>
+<hr>
+<h3>Daftar Kode Invite:</h3>
+<div id="inviteList"></div>
 
-<button class="btn" onclick="loadFile('akun.txt')">ACCOUNT MLBB ACAK akun.txt</button>
-<button class="btn" onclick="loadFile('info.txt')">ACCOUNT MLBB INFO info.txt</button>
-<button class="btn" onclick="loadFile('info1.txt')">ACCOUNT MLBB INFO info1.txt</button>
-<button class="btn" onclick="loadFile('info2.txt')">ACCOUNT MLBB INFO info2.txt</button>
-<button class="btn" onclick="loadFile('info3.txt')">ACCOUNT MLBB INFO info3.txt</button>
-<button class="btn" onclick="loadFile('roblox.txt')">ACCOUNT ROBLOX ACAK roblox.txt</button>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-<div class="output">
-    <textarea id="hasil" placeholder="Hasil akun akan muncul di sini..." readonly></textarea>
-    <button class="btn download" onclick="downloadTxt()">Download TXT</button>
-</div>
+// 🔹 Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyCkWKmK_UmQtk6UEIset5e6iPmFZj0ZLHc",
+  authDomain: "bugemtoolsdb.firebaseapp.com",
+  databaseURL: "https://bugemtoolsdb-default-rtdb.firebaseio.com",
+  projectId: "bugemtoolsdb",
+  storageBucket: "bugemtoolsdb.firebasestorage.app",
+  messagingSenderId: "52270788635",
+  appId: "1:52270788635:web:59bf1c23406beb872e48be"
+};
 
-<div class="footer">SKY LAND TOOLS</div>
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-</div>
+const inviteListDiv = document.getElementById("inviteList");
 
-<script>
-let akunList=[];
-let lastResult="";
-let currentFile="";
+// ===== Tambah Kode =====
+window.tambahKode = async () => {
+  const kode = document.getElementById("kode").value.trim();
+  if(!kode) return alert("Kode tidak boleh kosong");
 
-function loadFile(file){
-    currentFile=file;
-    let jumlah=prompt("Mau generate berapa akun?","1");
-    jumlah=parseInt(jumlah);
-    if(!jumlah||jumlah<1)return alert("Jumlah tidak valid");
+  const kodeRef = ref(db, "invites/" + kode);
+  const snapshot = await get(kodeRef);
+  if(snapshot.exists()){
+    alert("Kode sudah ada");
+    return;
+  }
 
-    fetch(file).then(r=>r.text()).then(text=>{
-        if(file.startsWith("info")){
-            akunList=text.split(/\n\s*\n/).map(x=>x.trim()).filter(x=>x.length>20);
-        }else{
-            akunList=text.split("\n").map(x=>x.trim()).filter(x=>x.includes(":"));
-        }
-        if(jumlah>akunList.length)return alert("Akun tidak cukup");
-        generate(jumlah);
-    });
-}
+  await set(kodeRef, { created: Date.now() });
+  alert("Kode berhasil ditambahkan");
+  document.getElementById("kode").value = "";
+};
 
-function generate(jumlah){
-    let temp=[...akunList];
-    let hasil=[];
-    for(let i=0;i<jumlah;i++){
-        let idx=Math.floor(Math.random()*temp.length);
-        let d=temp.splice(idx,1)[0];
-        if(currentFile.startsWith("info")){
-            hasil.push(d);
-        }else{
-            let p=d.split(":");
-            hasil.push("Email    : "+p[0]+"\nPassword : "+p[1]);
-        }
-    }
-    lastResult=hasil.join("\n\n====================\n\n");
-    document.getElementById("hasil").value=lastResult;
-}
-
-function downloadTxt(){
-    if(!lastResult)return alert("Belum ada akun");
-    let n=prompt("Nama file","skyland_result");
-    if(!n)return;
-    let b=new Blob([lastResult],{type:"text/plain"});
-    let a=document.createElement("a");
-    a.href=URL.createObjectURL(b);
-    a.download=n+".txt";
-    a.click();
-}
+// ===== Tampilkan Daftar Kode Realtime =====
+const invitesRef = ref(db, "invites");
+onValue(invitesRef, (snapshot) => {
+  inviteListDiv.innerHTML = "";
+  snapshot.forEach(childSnap => {
+    const div = document.createElement("div");
+    div.innerText = childSnap.key + " | " + new Date(childSnap.val().created).toLocaleString();
+    inviteListDiv.appendChild(div);
+  });
+});
 </script>
 
 </body>
-    </html>
+</html>
