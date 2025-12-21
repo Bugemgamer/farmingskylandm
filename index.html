@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLBB Account Checker v2.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 15px;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .telegram-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .telegram-link:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-section, .control-section {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #334155;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #8b5cf6;
+        }
+
+        .upload-area {
+            border: 2px dashed #475569;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        .upload-area i {
+            font-size: 3rem;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .upload-area h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+
+        .upload-area p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .upload-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .upload-btn:hover {
+            background: #2563eb;
+        }
+
+        .file-info {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .file-info p {
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .file-info span {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 18px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .control-btn i {
+            font-size: 1.8rem;
+        }
+
+        .settings-section {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #475569;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .setting-label {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .setting-value {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .results-section {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #334155;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .results-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-box {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-top: 4px solid;
+        }
+
+        .stat-box.valid {
+            border-color: #10b981;
+        }
+
+        .stat-box.invalid {
+            border-color: #ef4444;
+        }
+
+        .stat-box.error {
+            border-color: #f59e0b;
+        }
+
+        .stat-box.total {
+            border-color: #3b82f6;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .results-log {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.5);
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-entry.valid {
+            border-color: #10b981;
+        }
+
+        .log-entry.invalid {
+            border-color: #ef4444;
+        }
+
+        .log-entry.error {
+            border-color: #f59e0b;
+        }
+
+        .log-entry.unknown {
+            border-color: #8b5cf6;
+        }
+
+        .log-time {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            min-width: 80px;
+        }
+
+        .log-email {
+            color: #cbd5e1;
+            flex-grow: 1;
+            margin: 0 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .log-status {
+            font-weight: bold;
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .log-status.valid {
+            color: #10b981;
+        }
+
+        .log-status.invalid {
+            color: #ef4444;
+        }
+
+        .log-status.error {
+            color: #f59e0b;
+        }
+
+        .log-status.unknown {
+            color: #8b5cf6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #334155;
+            margin-top: 30px;
+        }
+
+        .clear-btn {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: #475569;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-container {
+            margin-top: 20px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #334155;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">MLBB CHECKER</div>
+            <div class="subtitle">Mobile Legends: Bang Bang Account Checker v2.0</div>
+            <div>Telegram: <a href="https://t.me/checktonapp" class="telegram-link" target="_blank">@checktonapp</a></div>
+        </header>
+
+        <div class="dashboard">
+            <div class="upload-section">
+                <h2 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Upload Files</h2>
+                
+                <div class="upload-area" id="comboUploadArea">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>Combo File (email:password)</h3>
+                    <p>Upload your combo list in email:password format</p>
+                    <input type="file" id="comboFile" accept=".txt" hidden>
+                    <button class="upload-btn" id="comboUploadBtn">Browse Combo File</button>
+                </div>
+                
+                <div class="file-info" id="comboFileInfo">
+                    <p>File: <span id="comboFileName">No file selected</span></p>
+                    <p>Accounts: <span id="comboFileCount">0</span></p>
+                </div>
+                
+                <div class="upload-area" id="tokenUploadArea">
+                    <i class="fas fa-key"></i>
+                    <h3>CN31 Tokens File</h3>
+                    <p>Upload your CN31 tokens list (one per line)</p>
+                    <input type="file" id="tokenFile" accept=".txt" hidden>
+                    <button class="upload-btn" id="tokenUploadBtn">Browse Tokens File</button>
+                </div>
+                
+                <div class="file-info" id="tokenFileInfo">
+                    <p>File: <span id="tokenFileName">No file selected</span></p>
+                    <p>Tokens: <span id="tokenFileCount">0</span></p>
+                </div>
+                
+                <div class="upload-area" id="proxyUploadArea">
+                    <i class="fas fa-globe"></i>
+                    <h3>Proxy File (Optional)</h3>
+                    <p>Upload proxy list (ip:port or ip:port:user:pass)</p>
+                    <input type="file" id="proxyFile" accept=".txt" hidden>
+                    <button class="upload-btn" id="proxyUploadBtn">Browse Proxy File</button>
+                </div>
+                
+                <div class="file-info" id="proxyFileInfo">
+                    <p>File: <span id="proxyFileName">No file selected</span></p>
+                    <p>Proxies: <span id="proxyFileCount">0</span></p>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h2 class="section-title"><i class="fas fa-cogs"></i> Control Panel</h2>
+                
+                <div class="control-buttons">
+                    <button class="control-btn" id="startBtn">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Start Checking</span>
+                    </button>
+                    
+                    <button class="control-btn" id="stopBtn" disabled>
+                        <i class="fas fa-stop-circle"></i>
+                        <span>Stop Checking</span>
+                    </button>
+                    
+                    <button class="control-btn" id="testBtn">
+                        <i class="fas fa-vial"></i>
+                        <span>Test Single Account</span>
+                    </button>
+                    
+                    <button class="control-btn" id="saveBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Save Results</span>
+                    </button>
+                </div>
+                
+                <div class="settings-section">
+                    <h3 style="color: #cbd5e1; margin-bottom: 15px;">Checking Settings</h3>
+                    
+                    <div class="setting-item">
+                        <span class="setting-label">Threads:</span>
+                        <span class="setting-value" id="threadCount">4</span>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <span class="setting-label">Delay (ms):</span>
+                        <span class="setting-value" id="delayValue">1000</span>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <span class="setting-label">Proxy Enabled:</span>
+                        <span class="setting-value" id="proxyEnabled">Yes</span>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <span class="setting-label">Timeout (ms):</span>
+                        <span class="setting-value" id="timeoutValue">30000</span>
+                    </div>
+                </div>
+                
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressStatus">Initializing...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="section-title"><i class="fas fa-list-alt"></i> Checking Results</h2>
+                <button class="clear-btn" id="clearLogBtn">Clear Log</button>
+            </div>
+            
+            <div class="results-stats">
+                <div class="stat-box valid">
+                    <div class="stat-number" id="validCount">0</div>
+                    <div class="stat-label">VALID</div>
+                </div>
+                
+                <div class="stat-box invalid">
+                    <div class="stat-number" id="invalidCount">0</div>
+                    <div class="stat-label">INVALID</div>
+                </div>
+                
+                <div class="stat-box error">
+                    <div class="stat-number" id="errorCount">0</div>
+                    <div class="stat-label">ERRORS</div>
+                </div>
+                
+                <div class="stat-box total">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">TOTAL</div>
+                </div>
+            </div>
+            
+            <div class="results-log" id="resultsLog">
+                <!-- Log entries will be added here -->
+                <div class="log-entry">
+                    <div class="log-time">--:--:--</div>
+                    <div class="log-email">Upload files and click "Start Checking" to begin</div>
+                    <div class="log-status">READY</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>MLBB Account Checker v2.0 • Enhanced Version • Multi-threaded with Proxy Support</p>
+            <p>For updates and support: <a href="https://t.me/checktonapp" class="telegram-link" target="_blank">t.me/checktonapp</a></p>
+        </footer>
+    </div>
+
+    <!-- Test Single Account Modal -->
+    <div id="testModal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+        <div style="background: #1e293b; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; border: 1px solid #334155;">
+            <h2 style="color: #3b82f6; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-vial"></i> Test Single Account
+            </h2>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; color: #cbd5e1; margin-bottom: 8px;">Email:</label>
+                <input type="text" id="testEmail" style="width: 100%; padding: 12px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #e2e8f0; font-size: 1rem;">
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; color: #cbd5e1; margin-bottom: 8px;">CN31 Token:</label>
+                <input type="text" id="testToken" style="width: 100%; padding: 12px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #e2e8f0; font-size: 1rem;">
+            </div>
+            
+            <div style="display: flex; gap: 15px;">
+                <button id="testRunBtn" style="flex: 1; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                    <i class="fas fa-play"></i> Run Test
+                </button>
+                <button id="testCloseBtn" style="flex: 1; background: #64748b; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    Cancel
+                </button>
+            </div>
+            
+            <div id="testResult" style="margin-top: 20px; padding: 15px; border-radius: 8px; display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        const state = {
+            combos: [],
+            tokens: [],
+            proxies: [],
+            checking: false,
+            results: [],
+            totalAccounts: 0,
+            checkedAccounts: 0,
+            validAccounts: 0,
+            invalidAccounts: 0,
+            errorAccounts: 0
+        };
+
+        // DOM Elements
+        const comboFileInput = document.getElementById('comboFile');
+        const tokenFileInput = document.getElementById('tokenFile');
+        const proxyFileInput = document.getElementById('proxyFile');
+        const comboUploadBtn = document.getElementById('comboUploadBtn');
+        const tokenUploadBtn = document.getElementById('tokenUploadBtn');
+        const proxyUploadBtn = document.getElementById('proxyUploadBtn');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const testBtn = document.getElementById('testBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const clearLogBtn = document.getElementById('clearLogBtn');
+        const resultsLog = document.getElementById('resultsLog');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressStatus = document.getElementById('progressStatus');
+        const progressPercent = document.getElementById('progressPercent');
+        
+        // Stats elements
+        const validCountEl = document.getElementById('validCount');
+        const invalidCountEl = document.getElementById('invalidCount');
+        const errorCountEl = document.getElementById('errorCount');
+        const totalCountEl = document.getElementById('totalCount');
+        
+        // Modal elements
+        const testModal = document.getElementById('testModal');
+        const testEmail = document.getElementById('testEmail');
+        const testToken = document.getElementById('testToken');
+        const testRunBtn = document.getElementById('testRunBtn');
+        const testCloseBtn = document.getElementById('testCloseBtn');
+        const testResult = document.getElementById('testResult');
+
+        // Event Listeners
+        comboUploadBtn.addEventListener('click', () => comboFileInput.click());
+        tokenUploadBtn.addEventListener('click', () => tokenFileInput.click());
+        proxyUploadBtn.addEventListener('click', () => proxyFileInput.click());
+        
+        comboFileInput.addEventListener('change', (e) => handleFileUpload(e, 'combo'));
+        tokenFileInput.addEventListener('change', (e) => handleFileUpload(e, 'token'));
+        proxyFileInput.addEventListener('change', (e) => handleFileUpload(e, 'proxy'));
+        
+        startBtn.addEventListener('click', startChecking);
+        stopBtn.addEventListener('click', stopChecking);
+        testBtn.addEventListener('click', showTestModal);
+        saveBtn.addEventListener('click', saveResults);
+        clearLogBtn.addEventListener('click', clearLog);
+        
+        testRunBtn.addEventListener('click', runSingleTest);
+        testCloseBtn.addEventListener('click', () => testModal.classList.add('hidden'));
+
+        // File upload handling
+        function handleFileUpload(event, fileType) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const lines = content.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+                
+                if (fileType === 'combo') {
+                    state.combos = lines;
+                    updateFileInfo('combo', file.name, lines.length);
+                    addLogEntry(`Loaded ${lines.length} combos from ${file.name}`, 'ready');
+                } else if (fileType === 'token') {
+                    state.tokens = lines;
+                    updateFileInfo('token', file.name, lines.length);
+                    addLogEntry(`Loaded ${lines.length} CN31 tokens from ${file.name}`, 'ready');
+                } else if (fileType === 'proxy') {
+                    state.proxies = lines;
+                    updateFileInfo('proxy', file.name, lines.length);
+                    addLogEntry(`Loaded ${lines.length} proxies from ${file.name}`, 'ready');
+                }
+                
+                updateStartButtonState();
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        function updateFileInfo(type, fileName, count) {
+            const nameEl = document.getElementById(`${type}FileName`);
+            const countEl = document.getElementById(`${type}FileCount`);
+            const infoEl = document.getElementById(`${type}FileInfo`);
+            
+            nameEl.textContent = fileName;
+            countEl.textContent = count;
+            infoEl.classList.add('show');
+        }
+        
+        function updateStartButtonState() {
+            // Enable start button only if we have combos and tokens
+            startBtn.disabled = !(state.combos.length > 0 && state.tokens.length > 0);
+        }
+        
+        // Log management
+        function addLogEntry(message, status, email = '') {
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${status}`;
+            
+            logEntry.innerHTML = `
+                <div class="log-time">${time}</div>
+                <div class="log-email">${email || message}</div>
+                <div class="log-status ${status}">${status.toUpperCase()}</div>
+            `;
+            
+            resultsLog.prepend(logEntry);
+            
+            // Limit log entries to 100
+            const entries = resultsLog.querySelectorAll('.log-entry');
+            if (entries.length > 100) {
+                resultsLog.removeChild(entries[entries.length - 1]);
+            }
+        }
+        
+        function clearLog() {
+            resultsLog.innerHTML = '';
+            addLogEntry('Log cleared', 'ready');
+        }
+        
+        // Update statistics
+        function updateStats() {
+            validCountEl.textContent = state.validAccounts;
+            invalidCountEl.textContent = state.invalidAccounts;
+            errorCountEl.textContent = state.errorAccounts;
+            totalCountEl.textContent = state.results.length;
+        }
+        
+        // Progress tracking
+        function updateProgress() {
+            if (state.totalAccounts === 0) return;
+            
+            const percent = Math.round((state.checkedAccounts / state.totalAccounts) * 100);
+            progressFill.style.width = `${percent}%`;
+            progressPercent.textContent = `${percent}%`;
+            progressStatus.textContent = `Checked ${state.checkedAccounts} of ${state.totalAccounts} accounts`;
+        }
+        
+        // Start checking process
+        async function startChecking() {
+            if (state.checking) return;
+            
+            // Reset state
+            state.checking = true;
+            state.results = [];
+            state.checkedAccounts = 0;
+            state.validAccounts = 0;
+            state.invalidAccounts = 0;
+            state.errorAccounts = 0;
+            state.totalAccounts = state.combos.length;
+            
+            // Update UI
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            progressContainer.style.display = 'block';
+            updateStats();
+            updateProgress();
+            
+            addLogEntry(`Starting check of ${state.totalAccounts} accounts`, 'ready');
+            
+            // Simulate checking process (in real implementation, this would connect to your Node.js backend)
+            simulateChecking();
+        }
+        
+        function stopChecking() {
+            state.checking = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            addLogEntry('Checking stopped by user', 'error');
+        }
+        
+        // Simulate checking process (Replace with actual API calls to your Node.js server)
+        function simulateChecking() {
+            if (!state.checking) return;
+            
+            // Simulate checking a batch of accounts
+            const batchSize = 5;
+            const startIdx = state.checkedAccounts;
+            const endIdx = Math.min(startIdx + batchSize, state.totalAccounts);
+            
+            for (let i = startIdx; i < endIdx; i++) {
+                if (!state.checking) break;
+                
+                const combo = state.combos[i];
+                const parts = combo.split(':');
+                const email = parts[0] || combo;
+                
+                // Simulate different outcomes
+                const random = Math.random();
+                let status, message;
+                
+                if (random < 0.3) {
+                    status = 'valid';
+                    message = 'Success! Account is valid';
+                    state.validAccounts++;
+                } else if (random < 0.7) {
+                    status = 'invalid';
+                    message = 'No account found';
+                    state.invalidAccounts++;
+                } else {
+                    status = 'error';
+                    message = 'Error checking account';
+                    state.errorAccounts++;
+                }
+                
+                state.results.push({ email, status, message });
+                state.checkedAccounts++;
+                
+                addLogEntry(message, status, email);
+                updateStats();
+                updateProgress();
+            }
+            
+            // Continue checking if not finished
+            if (state.checking && state.checkedAccounts < state.totalAccounts) {
+                setTimeout(simulateChecking, 1000); // Simulate delay
+            } else if (state.checkedAccounts >= state.totalAccounts) {
+                finishChecking();
+            }
+        }
+        
+        function finishChecking() {
+            state.checking = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            addLogEntry(`Checking completed! Valid: ${state.validAccounts}, Invalid: ${state.invalidAccounts}, Errors: ${state.errorAccounts}`, 'ready');
+            
+            // Show completion message
+            progressStatus.textContent = `Completed! ${state.validAccounts} valid accounts found`;
+            progressFill.style.background = '#10b981';
+        }
+        
+        // Test single account
+        function showTestModal() {
+            testModal.classList.remove('hidden');
+            testResult.style.display = 'none';
+            testEmail.value = '';
+            testToken.value = '';
+        }
+        
+        async function runSingleTest() {
+            const email = testEmail.value.trim();
+            const token = testToken.value.trim();
+            
+            if (!email || !token) {
+                showTestResult('Please enter both email and token', 'error');
+                return;
+            }
+            
+            testRunBtn.innerHTML = '<div class="loading"></div> Testing...';
+            testRunBtn.disabled = true;
+            
+            // Simulate API call (Replace with actual API call)
+            setTimeout(() => {
+                // Simulate response
+                const random = Math.random();
+                let status, message;
+                
+                if (random < 0.4) {
+                    status = 'valid';
+                    message = 'Success! Account is valid';
+                } else if (random < 0.8) {
+                    status = 'invalid';
+                    message = 'No account found';
+                } else {
+                    status = 'error';
+                    message = 'Error checking account';
+                }
+                
+                showTestResult(message, status);
+                testRunBtn.innerHTML = '<i class="fas fa-play"></i> Run Test';
+                testRunBtn.disabled = false;
+            }, 2000);
+        }
+        
+        function showTestResult(message, status) {
+            testResult.textContent = message;
+            testResult.className = '';
+            testResult.classList.add(status);
+            
+            // Style based on status
+            if (status === 'valid') {
+                testResult.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                testResult.style.color = '#10b981';
+                testResult.style.borderLeft = '4px solid #10b981';
+            } else if (status === 'invalid') {
+                testResult.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                testResult.style.color = '#ef4444';
+                testResult.style.borderLeft = '4px solid #ef4444';
+            } else {
+                testResult.style.backgroundColor = 'rgba(245, 158, 11, 0.2)';
+                testResult.style.color = '#f59e0b';
+                testResult.style.borderLeft = '4px solid #f59e0b';
+            }
+            
+            testResult.style.padding = '15px';
+            testResult.style.borderRadius = '8px';
+            testResult.style.marginTop = '20px';
+            testResult.style.display = 'block';
+        }
+        
+        // Save results
+        function saveResults() {
+            if (state.results.length === 0) {
+                addLogEntry('No results to save', 'error');
+                return;
+            }
+            
+            const validResults = state.results.filter(r => r.status === 'valid');
+            
+            let content = `MLBB Checker Results - ${new Date().toLocaleString()}\n`;
+            content += `Total Checked: ${state.results.length}\n`;
+            content += `Valid: ${validResults.length}\n`;
+            content += `Invalid: ${state.invalidAccounts}\n`;
+            content += `Errors: ${state.errorAccounts}\n\n`;
+            
+            if (validResults.length > 0) {
+                content += 'VALID ACCOUNTS:\n';
+                content += '═'.repeat(50) + '\n';
+                validResults.forEach(result => {
+                    content += `${result.email}\n`;
+                });
+            }
+            
+            // Create and download file
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mlbb_results_${Date.now()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addLogEntry(`Results saved to ${a.download}`, 'valid');
+        }
+        
+        // Initialize
+        updateStartButtonState();
+        addLogEntry('Upload combo file and CN31 tokens to begin', 'ready');
+    </script>
+</body>
+</html>
