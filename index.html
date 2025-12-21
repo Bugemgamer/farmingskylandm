@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLBB Account Checker v2.0 - REAL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Sama dengan CSS sebelumnya, tapi kita akan buat lebih simple */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 15px;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .upload-area {
+            border: 2px dashed #475569;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .log-entry {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.5);
+            border-left: 4px solid;
+        }
+
+        .log-entry.valid {
+            border-color: #10b981;
+        }
+
+        .log-entry.invalid {
+            border-color: #ef4444;
+        }
+
+        .log-entry.error {
+            border-color: #f59e0b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid #334155;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">MLBB CHECKER v2.0</div>
+            <div class="subtitle">REAL API Connection - Mobile Legends Account Checker</div>
+            <div style="color: #60a5fa; font-weight: bold;">Status: <span id="apiStatus">Connecting to server...</span></div>
+        </header>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 30px;">
+            <div style="background: rgba(15, 23, 42, 0.8); border-radius: 15px; padding: 20px;">
+                <h2 style="color: #3b82f6; margin-bottom: 20px;">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload Files
+                </h2>
+                
+                <div class="upload-area" onclick="document.getElementById('comboFile').click()">
+                    <i class="fas fa-file-alt" style="font-size: 2rem; color: #64748b;"></i>
+                    <h3>Combo File</h3>
+                    <p style="color: #94a3b8;">email:password format (.txt)</p>
+                    <div id="comboInfo" style="display: none; margin-top: 10px;">
+                        <div style="color: #60a5fa;">Loaded: <span id="comboCount">0</span> accounts</div>
+                    </div>
+                </div>
+                <input type="file" id="comboFile" accept=".txt" style="display: none;" onchange="uploadFile('combo', this.files[0])">
+                
+                <div class="upload-area" onclick="document.getElementById('tokenFile').click()" style="margin-top: 20px;">
+                    <i class="fas fa-key" style="font-size: 2rem; color: #64748b;"></i>
+                    <h3>CN31 Tokens</h3>
+                    <p style="color: #94a3b8;">One token per line (.txt)</p>
+                    <div id="tokenInfo" style="display: none; margin-top: 10px;">
+                        <div style="color: #60a5fa;">Loaded: <span id="tokenCount">0</span> tokens</div>
+                    </div>
+                </div>
+                <input type="file" id="tokenFile" accept=".txt" style="display: none;" onchange="uploadFile('token', this.files[0])">
+                
+                <div class="upload-area" onclick="document.getElementById('proxyFile').click()" style="margin-top: 20px;">
+                    <i class="fas fa-globe" style="font-size: 2rem; color: #64748b;"></i>
+                    <h3>Proxy File (Optional)</h3>
+                    <p style="color: #94a3b8;">ip:port or ip:port:user:pass</p>
+                    <div id="proxyInfo" style="display: none; margin-top: 10px;">
+                        <div style="color: #60a5fa;">Loaded: <span id="proxyCount">0</span> proxies</div>
+                    </div>
+                </div>
+                <input type="file" id="proxyFile" accept=".txt" style="display: none;" onchange="uploadFile('proxy', this.files[0])">
+                
+                <div style="margin-top: 30px; padding: 15px; background: rgba(30, 41, 59, 0.6); border-radius: 10px;">
+                    <h3 style="color: #cbd5e1; margin-bottom: 15px;">Settings</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Threads:</span>
+                            <select id="threadCount" style="background: #0f172a; color: white; border: 1px solid #475569; padding: 5px; border-radius: 5px;">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="4" selected>4</option>
+                                <option value="8">8</option>
+                                <option value="16">16</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Delay (ms):</span>
+                            <input type="number" id="delay" value="1000" min="0" max="10000" style="background: #0f172a; color: white; border: 1px solid #475569; padding: 5px; border-radius: 5px; width: 100px;">
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Use Proxies:</span>
+                            <input type="checkbox" id="useProxies">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: rgba(15, 23, 42, 0.8); border-radius: 15px; padding: 20px;">
+                <h2 style="color: #3b82f6; margin-bottom: 20px;">
+                    <i class="fas fa-cogs"></i> Control Panel
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <button class="control-btn" id="startBtn" onclick="startChecking()">
+                        <i class="fas fa-play-circle"></i> Start Checking
+                    </button>
+                    <button class="control-btn" id="stopBtn" onclick="stopChecking()" style="background: #ef4444; display: none;">
+                        <i class="fas fa-stop-circle"></i> Stop Checking
+                    </button>
+                    <button class="control-btn" onclick="showTestModal()">
+                        <i class="fas fa-vial"></i> Test Single
+                    </button>
+                    <button class="control-btn" onclick="saveResults()">
+                        <i class="fas fa-save"></i> Save Results
+                    </button>
+                </div>
+                
+                <div style="background: rgba(30, 41, 59, 0.6); border-radius: 10px; padding: 15px; margin-bottom: 20px; display: none;" id="progressContainer">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span id="progressStatus">Initializing...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div style="height: 10px; background: #334155; border-radius: 5px; overflow: hidden;">
+                        <div id="progressBar" style="height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); width: 0%; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: rgba(30, 41, 59, 0.6); border-radius: 10px; padding: 15px; text-align: center; border-top: 4px solid #10b981;">
+                        <div style="font-size: 2rem; font-weight: bold;" id="validCount">0</div>
+                        <div style="color: #94a3b8; font-size: 0.9rem;">VALID</div>
+                    </div>
+                    <div style="background: rgba(30, 41, 59, 0.6); border-radius: 10px; padding: 15px; text-align: center; border-top: 4px solid #ef4444;">
+                        <div style="font-size: 2rem; font-weight: bold;" id="invalidCount">0</div>
+                        <div style="color: #94a3b8; font-size: 0.9rem;">INVALID</div>
+                    </div>
+                    <div style="background: rgba(30, 41, 59, 0.6); border-radius: 10px; padding: 15px; text-align: center; border-top: 4px solid #f59e0b;">
+                        <div style="font-size: 2rem; font-weight: bold;" id="errorCount">0</div>
+                        <div style="color: #94a3b8; font-size: 0.9rem;">ERRORS</div>
+                    </div>
+                    <div style="background: rgba(30, 41, 59, 0.6); border-radius: 10px; padding: 15px; text-align: center; border-top: 4px solid #3b82f6;">
+                        <div style="font-size: 2rem; font-weight: bold;" id="totalCount">0</div>
+                        <div style="color: #94a3b8; font-size: 0.9rem;">TOTAL</div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(30, 41, 59, 0.6); border-radius: 10px; padding: 15px; max-height: 400px; overflow-y: auto;" id="resultsLog">
+                    <div class="log-entry">
+                        <div style="color: #94a3b8; font-size: 0.85rem;">--:--:--</div>
+                        <div style="color: #cbd5e1; margin: 5px 0;">Upload files and start checking</div>
+                        <div style="color: #60a5fa; font-weight: bold;">READY</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Modal -->
+    <div class="modal" id="testModal">
+        <div class="modal-content">
+            <h2 style="color: #3b82f6; margin-bottom: 20px;">
+                <i class="fas fa-vial"></i> Test Single Account
+            </h2>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; color: #cbd5e1; margin-bottom: 8px;">Email:</label>
+                <input type="text" id="testEmail" style="width: 100%; padding: 12px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #e2e8f0; font-size: 1rem;">
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; color: #cbd5e1; margin-bottom: 8px;">CN31 Token:</label>
+                <input type="text" id="testToken" style="width: 100%; padding: 12px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #e2e8f0; font-size: 1rem;">
+            </div>
+            
+            <div style="display: flex; gap: 15px;">
+                <button id="testRunBtn" onclick="runSingleTest()" style="flex: 1; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                    <i class="fas fa-play"></i> Run Test
+                </button>
+                <button onclick="closeTestModal()" style="flex: 1; background: #64748b; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    Cancel
+                </button>
+            </div>
+            
+            <div id="testResult" style="margin-top: 20px; padding: 15px; border-radius: 8px; display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        const state = {
+            combos: [],
+            tokens: [],
+            proxies: [],
+            checking: false,
+            results: [],
+            currentBatch: 0,
+            totalBatches: 0
+        };
+
+        // API Base URL
+        const API_BASE = window.location.origin;
+
+        // Check API status on load
+        checkApiStatus();
+
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/test-single`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: 'test@test.com', token: 'test' })
+                });
+                document.getElementById('apiStatus').textContent = 'API Connected';
+                document.getElementById('apiStatus').style.color = '#10b981';
+            } catch (error) {
+                document.getElementById('apiStatus').textContent = 'API Error - Check Server';
+                document.getElementById('apiStatus').style.color = '#ef4444';
+            }
+        }
+
+        // File upload
+        async function uploadFile(type, file) {
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (type === 'combo') {
+                        state.combos = data.lines;
+                        document.getElementById('comboInfo').style.display = 'block';
+                        document.getElementById('comboCount').textContent = data.lineCount;
+                        addLog(`Loaded ${data.lineCount} combos from ${data.fileName}`, 'ready');
+                    } else if (type === 'token') {
+                        state.tokens = data.lines;
+                        document.getElementById('tokenInfo').style.display = 'block';
+                        document.getElementById('tokenCount').textContent = data.lineCount;
+                        addLog(`Loaded ${data.lineCount} tokens from ${data.fileName}`, 'ready');
+                    } else if (type === 'proxy') {
+                        state.proxies = data.lines;
+                        document.getElementById('proxyInfo').style.display = 'block';
+                        document.getElementById('proxyCount').textContent = data.lineCount;
+                        addLog(`Loaded ${data.lineCount} proxies from ${data.fileName}`, 'ready');
+                    }
+                    
+                    updateStartButton();
+                }
+            } catch (error) {
+                addLog(`Error uploading ${type} file: ${error.message}`, 'error');
+            }
+        }
+
+        function updateStartButton() {
+            const canStart = state.combos.length > 0 && state.tokens.length > 0;
+            document.getElementById('startBtn').disabled = !canStart;
+        }
+
+        // Log functions
+        function addLog(message, status) {
+            const time = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${status}`;
+            
+            logEntry.innerHTML = `
+                <div style="color: #94a3b8; font-size: 0.85rem;">${time}</div>
+                <div style="color: #cbd5e1; margin: 5px 0;">${message}</div>
+                <div style="color: ${getStatusColor(status)}; font-weight: bold;">${status.toUpperCase()}</div>
+            `;
+            
+            document.getElementById('resultsLog').prepend(logEntry);
+            
+            // Keep only last 50 logs
+            const logs = document.getElementById('resultsLog').children;
+            if (logs.length > 50) {
+                document.getElementById('resultsLog').removeChild(logs[logs.length - 1]);
+            }
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'valid': return '#10b981';
+                case 'invalid': return '#ef4444';
+                case 'error': return '#f59e0b';
+                case 'ready': return '#60a5fa';
+                default: return '#8b5cf6';
+            }
+        }
+
+        // Update stats
+        function updateStats() {
+            const valid = state.results.filter(r => r.status === 'valid').length;
+            const invalid = state.results.filter(r => r.status === 'invalid').length;
+            const error = state.results.filter(r => r.status === 'error').length;
+            
+            document.getElementById('validCount').textContent = valid;
+            document.getElementById('invalidCount').textContent = invalid;
+            document.getElementById('errorCount').textContent = error;
+            document.getElementById('totalCount').textContent = state.results.length;
+        }
+
+        // Progress
+        function updateProgress() {
+            if (state.combos.length === 0) return;
+            
+            const percent = Math.round((state.results.length / state.combos.length) * 100);
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressStatus').textContent = 
+                `Checked ${state.results.length} of ${state.combos.length} accounts`;
+        }
+
+        // Start checking
+        async function startChecking() {
+            if (state.checking || state.combos.length === 0 || state.tokens.length === 0) return;
+            
+            state.checking = true;
+            state.results = [];
+            
+            // Update UI
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'flex';
+            document.getElementById('progressContainer').style.display = 'block';
+            updateStats();
+            updateProgress();
+            
+            addLog(`Starting check of ${state.combos.length} accounts`, 'ready');
+            
+            // Process in batches
+            const batchSize = 5;
+            const batches = Math.ceil(state.combos.length / batchSize);
+            
+            for (let i = 0; i < batches; i++) {
+                if (!state.checking) break;
+                
+                const start = i * batchSize;
+                const end = Math.min(start + batchSize, state.combos.length);
+                const batch = state.combos.slice(start, end);
+                
+                try {
+                    const response = await fetch(`${API_BASE}/api/batch-check`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            batch: batch,
+                            tokens: state.tokens,
+                            proxies: state.proxies
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        state.results.push(...data.results);
+                        
+                        // Add each result to log
+                        data.results.forEach(result => {
+                            addLog(`${result.email}: ${result.message}`, result.status);
+                        });
+                        
+                        updateStats();
+                        updateProgress();
+                    }
+                } catch (error) {
+                    addLog(`Error processing batch ${i + 1}: ${error.message}`, 'error');
+                }
+                
+                // Delay between batches
+                if (state.checking && i < batches - 1) {
+                    await delay(parseInt(document.getElementById('delay').value) || 1000);
+                }
+            }
+            
+            finishChecking();
+        }
+
+        function stopChecking() {
+            state.checking = false;
+            document.getElementById('startBtn').style.display = 'flex';
+            document.getElementById('stopBtn').style.display = 'none';
+            addLog('Checking stopped by user', 'error');
+        }
+
+        function finishChecking() {
+            state.checking = false;
+            document.getElementById('startBtn').style.display = 'flex';
+            document.getElementById('stopBtn').style.display = 'none';
+            
+            const valid = state.results.filter(r => r.status === 'valid').length;
+            addLog(`Checking completed! Valid: ${valid}, Invalid: ${state.results.filter(r => r.status === 'invalid').length}, Errors: ${state.results.filter(r => r.status === 'error').length}`, 'ready');
+        }
+
+        // Test single account
+        function showTestModal() {
+            document.getElementById('testModal').classList.add('active');
+            document.getElementById('testResult').style.display = 'none';
+            document.getElementById('testEmail').value = '';
+            document.getElementById('testToken').value = '';
+        }
+
+        function closeTestModal() {
+            document.getElementById('testModal').classList.remove('active');
+        }
+
+        async function runSingleTest() {
+            const email = document.getElementById('testEmail').value.trim();
+            const token = document.getElementById('testToken').value.trim();
+            
+            if (!email || !token) {
+                showTestResult('Please enter both email and token', 'error');
+                return;
+            }
+            
+            const testRunBtn = document.getElementById('testRunBtn');
+            testRunBtn.innerHTML = '<div class="loading"></div> Testing...';
+            testRunBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/test-single`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, token })
+                });
+                
+                const data = await response.json();
+                showTestResult(data.message, data.status);
+                
+            } catch (error) {
+                showTestResult(`Error: ${error.message}`, 'error');
+            }
+            
+            testRunBtn.innerHTML = '<i class="fas fa-play"></i> Run Test';
+            testRunBtn.disabled = false;
+        }
+
+        function showTestResult(message, status) {
+            const testResult = document.getElementById('testResult');
+            testResult.textContent = message;
+            testResult.style.display = 'block';
+            testResult.style.padding = '15px';
+            testResult.style.borderRadius = '8px';
+            testResult.style.marginTop = '20px';
+            testResult.style.backgroundColor = status === 'valid' ? 'rgba(16, 185, 129, 0.2)' :
+                                            status === 'invalid' ? 'rgba(239, 68, 68, 0.2)' :
+                                            'rgba(245, 158, 11, 0.2)';
+            testResult.style.color = status === 'valid' ? '#10b981' :
+                                   status === 'invalid' ? '#ef4444' :
+                                   '#f59e0b';
+            testResult.style.borderLeft = `4px solid ${getStatusColor(status)}`;
+        }
+
+        // Save results
+        async function saveResults() {
+            if (state.results.length === 0) {
+                addLog('No results to save', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/save-results`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ results: state.results })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Download the file
+                    window.open(`${API_BASE}${data.downloadUrl}`, '_blank');
+                    addLog(`Results saved to ${data.filename}`, 'valid');
+                }
+            } catch (error) {
+                addLog(`Error saving results: ${error.message}`, 'error');
+            }
+        }
+
+        // Utility
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Initialize
+        updateStartButton();
+    </script>
+</body>
+</html>
